@@ -8,11 +8,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .animate-bounce-slow { animation: bounce 2s infinite; }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    .custom-shadow { box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-    .gradient-bg { background: linear-gradient(135deg, #f3f5ff 0%, #999999 100%); }
-    .input-focus:focus { box-shadow: 0 0 0 3px rgba(18, 140, 126, 0.2); }
+    .animate-bounce-slow {
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .custom-shadow {
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #f3f5ff 0%, #999999 100%);
+    }
+    .input-focus:focus {
+      box-shadow: 0 0 0 3px rgba(18, 140, 126, 0.2);
+    }
   </style>
 </head>
 <body class="gradient-bg min-h-screen font-['Poppins'] p-4 md:p-10">
@@ -233,6 +244,8 @@
       <p>&copy; 2025 - Votre Entreprise. Tous droits réservés.</p>
     </footer>
   </div>
+
+  <!-- Modal de confirmation -->
   <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 text-center">
       <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -245,29 +258,38 @@
       </button>
     </div>
   </div>
+
   <script>
     const productSelect = document.getElementById("product");
     const otherProductGroup = document.getElementById("otherProductGroup");
+
     productSelect.addEventListener("change", () => {
       otherProductGroup.classList.toggle("hidden", productSelect.value !== "Autre");
     });
+
     document.getElementById("orderForm").addEventListener("submit", function(e) {
       e.preventDefault();
+
       document.getElementById("progressBar").classList.add("w-full");
+
+      // Générer ID auto CMD-1, CMD-2...
       let lastId = parseInt(localStorage.getItem("lastOrderId")) || 0;
       lastId += 1;
       const orderId = "CMD-" + lastId;
       localStorage.setItem("lastOrderId", lastId);
+
       const now = new Date();
       const selectedProduct = productSelect.value === "Autre" 
         ? document.getElementById("otherProduct").value.trim() || "Produit personnalisé"
         : productSelect.value;
+
       const paymentMethod = document.querySelector('input[name="payment"]:checked').id;
       const paymentLabels = {
         cash: 'Paiement à domicile',
         card: 'Carte bancaire',
         edahabia: 'EDahabia'
       };
+
       const order = {
         id: orderId,
         date: now.toLocaleString('fr-FR'),
@@ -279,6 +301,8 @@
         address: document.getElementById("address").value.trim() || "Non fournie",
         payment: paymentMethod
       };
+
+      // ✅ Définir le message AVANT d'envoyer
       const confirmationText = `
         Merci <strong>${order.customer}</strong> !<br><br>
         Votre commande <strong>#${order.id}</strong> a été enregistrée.<br><br>
@@ -288,6 +312,8 @@
           ${order.quantity} × ${order.product} • ${order.wilaya}
         </small>
       `;
+
+      // ✅ Envoyer à Google Sheets
       fetch("https://script.google.com/macros/s/AKfycbxEiSC9J0XgRMEyW2lE6EWxJPSJfjo-PuHjEcQESWPqm1tGqoyaMEe5fI9qhmpVLcRM/exec", {
         method: "POST",
         mode: "no-cors",
@@ -295,12 +321,14 @@
         body: JSON.stringify(order)
       })
       .then(() => {
+        // Afficher le modal
         document.getElementById("confirmationText").innerHTML = confirmationText;
         document.getElementById("successModal").classList.remove("hidden");
         this.reset();
         otherProductGroup.classList.add("hidden");
       })
       .catch(err => {
+        // Même en cas d'erreur, montrez le message
         document.getElementById("confirmationText").innerHTML = confirmationText;
         document.getElementById("successModal").classList.remove("hidden");
         this.reset();
@@ -308,6 +336,7 @@
         console.error("Erreur d'envoi à Google Sheets", err);
       });
     });
+
     document.getElementById("closeModal").addEventListener("click", () => {
       document.getElementById("successModal").classList.add("hidden");
       document.getElementById("progressBar").classList.remove("w-full");
