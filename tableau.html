@@ -151,8 +151,6 @@
     const filterPayment = document.getElementById("filterPayment");
     const sortBy = document.getElementById("sortBy");
     const orderCount = document.getElementById("orderCount");
-    const modalContent = document.getElementById("modalContent");
-    const orderModal = document.getElementById("orderModal");
 
     document.addEventListener('DOMContentLoaded', () => {
       renderOrders();
@@ -257,7 +255,6 @@
     }
 
     function closeModal() { orderModal.classList.add("hidden"); }
-
     function sendWhatsApp(phone) {
       const cleanPhone = phone.replace(/[^0-9]/g, '');
       window.open(`https://wa.me/213${cleanPhone}`, '_blank');

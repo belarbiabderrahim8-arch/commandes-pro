@@ -1,3 +1,6 @@
+
+
+Problème de synchronisation des commandes
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -291,7 +294,7 @@
       orders.push(order);
       localStorage.setItem("orders", JSON.stringify(orders));
 
-      const confirmationText = 
+      const confirmationText = `
         <div class="text-left">
           <p class="mb-4">Merci <span class="font-semibold text-emerald-600">${order.customer}</span> !</p>
           <p class="mb-4">Votre commande a été enregistrée avec succès.</p>
@@ -308,7 +311,7 @@
           </div>
           <p class="mt-4 text-sm text-gray-500">Nous vous contacterons sous peu pour confirmer votre commande.</p>
         </div>
-      ;
+      `;
 
       setTimeout(() => {
         document.getElementById("confirmationText").innerHTML = confirmationText;
